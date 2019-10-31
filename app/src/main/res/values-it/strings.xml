@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Cori+</string>
+    <string name="action_create">Crea un aggiornamento di stato</string>
+    <string name="action_settings">Impostazioni</string>
+    <string name="attachment_summary_off">Scarica gli allegati solo quando richiesto manualmente</string>
+    <string name="attachment_summary_on">Scarica gli allegati automaticamente</string>
+    <string name="attachment_title">Scarica gli allegati in ingresso</string>
+    <string name="default_privacy_title">Condividi il messaggio di default con</string>
+    <string name="host_title">Usa host</string>
+    <string name="messages_header">Messaggi</string>
+    <string name="networking_header">Rete</string>
+    <string name="post_message">Pubblica</string>
+    <string name="privacy_header">Privacy</string>
+    <string name="reply_title">Azione predefinita alla risposta</string>
+    <string name="signature_title">La tua firma</string>
+    <string name="status_placeholder">Come va?</string>
+    <string name="status_pretext">Il tuo testo</string>
+    <string name="sync_header">Sincronizzazione</string>
+    <string name="sync_title">Sincronizza l\'email periodicamente</string>
+    <string name="title_activity_settings">Impostazioni</string>
+    <string name="unset_host">Per iniziare a usare Cori+, imposta l\'host nelle Impostazioni.</string>
+    <string name="action_feed">Visualizza il feed</string>
+    <string name="action_sign_in">Entra</string>
+    <string name="action_sign_in_short">Entra</string>
+    <string name="invalid_password">La password deve essere più lunga di 5 caratteru</string>
+    <string name="invalid_username">Nome utente non valido</string>
+    <string name="login_failed">Login fallito</string>
+    <string name="welcome">Benvenuto!</string>
+    <string name="title_activity_login">Entra</string>
+    <string name="prompt_username">Nome utente</string>
+    <string name="prompt_password">Password</string>
+    <string name="prompt_email">Email</string>
+    <string name="action_logout">Esci</string>
+    <string name="action_profile">Il mio profilo</string>
+    <string name="feed_error">Impossibile aggiornare il feed</string>
+    <string name="network_request_failed">Impossibile connettersi alla rete. Riprova più tardi.</string>
+</resources>
