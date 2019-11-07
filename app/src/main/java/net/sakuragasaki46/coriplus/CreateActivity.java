@@ -46,6 +46,12 @@ public class CreateActivity extends AppCompatActivity {
 
         final EditText messageText = findViewById(R.id.message_text);
 
+        try {
+            messageText.setText(getIntent().getExtras().getString("preload"));
+        } catch(NullPointerException ex){
+            messageText.setText("");
+        }
+
         Button button = (Button) findViewById(R.id.post_content);
         button.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -35,4 +35,6 @@
     <string name="action_profile">Il mio profilo</string>
     <string name="feed_error">Impossibile aggiornare il feed</string>
     <string name="network_request_failed">Impossibile connettersi alla rete. Riprova più tardi.</string>
+    <string name="action_refresh">Aggiorna</string>
+    <string name="title_activity_profile">Informazioni sul profilo</string>
 </resources>

@@ -1,5 +1,7 @@
 package net.sakuragasaki46.coriplus;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.opengl.Visibility;
@@ -10,6 +12,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 
 import android.util.Log;
@@ -21,7 +24,7 @@ import net.sakuragasaki46.coriplus.ui.login.LoginActivity;
 
 import static androidx.preference.PreferenceManager.getDefaultSharedPreferences;
 
-public class MainActivity extends AppCompatActivity implements MessageFragment.OnListFragmentInteractionListener{
+public class MainActivity extends AppCompatActivity implements OnListFragmentInteractionListener{
     @Nullable
     private String host = null;
     @Nullable
@@ -74,6 +77,18 @@ public class MainActivity extends AppCompatActivity implements MessageFragment.O
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        // Get the SearchView and set the searchable configuration
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        // Assumes current activity is the searchable activity
+        if (searchView != null) {
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+            searchView.setIconifiedByDefault(false);
+        } else {
+            Log.w("MainActivity", "could not create search bar");
+        }
+
         return true;
     }
 
@@ -92,6 +107,16 @@ public class MainActivity extends AppCompatActivity implements MessageFragment.O
 
         if (id == R.id.action_create){
             startActivity(new Intent(this, CreateActivity.class));
+            return true;
+        }
+
+        if (id == R.id.action_profile){
+            startActivity(new Intent(this, ProfileActivity.class));
+            return true;
+        }
+
+        if (id == R.id.action_search){
+            startActivity(new Intent(this, SearchProfilesActivity.class));
             return true;
         }
 

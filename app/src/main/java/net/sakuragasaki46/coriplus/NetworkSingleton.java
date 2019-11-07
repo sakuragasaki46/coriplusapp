@@ -92,4 +92,12 @@ public class NetworkSingleton {
         accessToken = accessToken != null? accessToken : "";
         return createUrl("/api/V1/" + path + "?access_token=" + accessToken);
     }
+
+    public String getUserId() {
+        try {
+            return getAccessToken().split(":")[0];
+        }catch(NullPointerException ex){
+            return null;
+        }
+    }
 }

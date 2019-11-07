@@ -41,4 +41,12 @@
     <string name="feed_error">Couldn\'t refresh feed</string>
     <string name="action_profile">My profile</string>
     <string name="network_request_failed">Could not make network request. Try again later.</string>
+    <string name="title_activity_profile">Profile info</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="profile_missing">This profile does not exist</string>
+    <string name="search_hint">Search for profiles</string>
+    <string name="action_search">Search</string>
+    <string name="followers_text">followers</string>
+    <string name="following_text">following</string>
+    <string name="messages_text">messages</string>
 </resources>
