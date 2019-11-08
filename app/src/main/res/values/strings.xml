@@ -49,4 +49,7 @@
     <string name="followers_text">followers</string>
     <string name="following_text">following</string>
     <string name="messages_text">messages</string>
+    <string name="edit_profile">Edit profile</string>
+    <string name="action_follow">Follow</string>
+    <string name="action_following">Following</string>
 </resources>

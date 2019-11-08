@@ -7,8 +7,8 @@ android {
         applicationId "net.sakuragasaki46.coriplus"
         minSdkVersion 15
         targetSdkVersion 29
-        versionCode 1
-        versionName "0.7"
+        versionCode 2
+        versionName "0.8"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

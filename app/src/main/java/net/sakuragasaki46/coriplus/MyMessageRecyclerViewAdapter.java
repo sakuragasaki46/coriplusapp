@@ -5,6 +5,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
@@ -13,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import net.sakuragasaki46.coriplus.OnListFragmentInteractionListener;
@@ -20,6 +24,7 @@ import net.sakuragasaki46.coriplus.dummy.DummyContent.DummyItem;
 
 import org.json.JSONException;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Date;
 import java.util.regex.Matcher;
@@ -89,6 +94,11 @@ public class MyMessageRecyclerViewAdapter extends RecyclerView.Adapter<MyMessage
 
         holder.mContentView.setText(content);
         holder.mContentView.setMovementMethod(LinkMovementMethod.getInstance());
+
+        if (holder.mItem.imageUrl != null) {
+            new DownloadImageTask(holder.mVisualView).execute(holder.mItem.imageUrl);
+            holder.mVisualView.setVisibility(View.VISIBLE);
+        }
         // TODO
         holder.mFooterView.setText(holder.itemView.getContext().getResources()
                 .getStringArray(R.array.message_privacy_array)[mValues.get(position).privacy]);
@@ -116,6 +126,7 @@ public class MyMessageRecyclerViewAdapter extends RecyclerView.Adapter<MyMessage
         public final View mView;
         public final TextView mUsernameView;
         public final TextView mContentView;
+        public final ImageView mVisualView;
         public final TextView mFooterView;
         public MessageItem mItem;
 
@@ -124,6 +135,7 @@ public class MyMessageRecyclerViewAdapter extends RecyclerView.Adapter<MyMessage
             mView = view;
             mUsernameView = (TextView) view.findViewById(R.id.author_username);
             mContentView = (TextView) view.findViewById(R.id.content);
+            mVisualView = (ImageView) view.findViewById(R.id.message_visual);
             mFooterView = (TextView) view.findViewById(R.id.message_footer);
         }
 
@@ -148,6 +160,32 @@ public class MyMessageRecyclerViewAdapter extends RecyclerView.Adapter<MyMessage
             Intent intent = new Intent(context, ProfileActivity.class);
             intent.putExtra("userid", span);
             context.startActivity(intent);
+        }
+    }
+
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        // TODO cache this
+        ImageView bmImage;
+
+        public DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urlDisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urlDisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("DownloadImageTask", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setImageBitmap(result);
         }
     }
 }

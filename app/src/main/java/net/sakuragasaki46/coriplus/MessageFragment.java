@@ -110,7 +110,8 @@ public class MessageFragment extends Fragment {
                                             jsonItem.getJSONObject("user"),
                                             jsonItem.getString("text"),
                                             jsonItem.getDouble("pub_date"),
-                                            jsonItem.getInt("privacy")
+                                            jsonItem.getInt("privacy"),
+                                            jsonItem.optString("media")
                                     ));
                                 } catch(JSONException ex){
                                     Log.w("MessageFragment", "missing some data on message");

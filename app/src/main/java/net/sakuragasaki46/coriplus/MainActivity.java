@@ -62,15 +62,21 @@ public class MainActivity extends AppCompatActivity implements OnListFragmentInt
             }
         });
 
-        loadingProgressBar = findViewById(R.id.loading);
-        loadingProgressBar.setVisibility(View.VISIBLE);
+        if (host != null) {
+            loadingProgressBar = findViewById(R.id.loading);
+            if (loadingProgressBar != null) {
+                loadingProgressBar.setVisibility(View.VISIBLE);
+            }
 
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.messages, new MessageFragment())
-                .commit();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.messages, new MessageFragment())
+                    .commit();
 
-        loadingProgressBar.setVisibility(View.GONE);
+            if (loadingProgressBar != null) {
+                loadingProgressBar.setVisibility(View.GONE);
+            }
+        }
     }
 
     @Override
@@ -118,6 +124,15 @@ public class MainActivity extends AppCompatActivity implements OnListFragmentInt
         if (id == R.id.action_search){
             startActivity(new Intent(this, SearchProfilesActivity.class));
             return true;
+        }
+
+        if (id == R.id.action_refresh){
+            MessageFragment fragment = new MessageFragment();
+
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.messages, fragment)
+                    .commit();
         }
 
         if (id == R.id.action_logout){
