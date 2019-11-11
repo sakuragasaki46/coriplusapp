@@ -1,6 +1,7 @@
 package net.sakuragasaki46.coriplus;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
@@ -14,6 +15,7 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -25,6 +27,7 @@ import net.sakuragasaki46.coriplus.dummy.DummyContent.DummyItem;
 import org.json.JSONException;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
 import java.util.regex.Matcher;
@@ -35,10 +38,10 @@ import java.util.regex.Pattern;
  * specified {@link OnListFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
-public class MyMessageRecyclerViewAdapter extends RecyclerView.Adapter<MyMessageRecyclerViewAdapter.ViewHolder> {
+public class MyMessageRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private final List<MessageItem> mValues;
-    private final OnListFragmentInteractionListener mListener;
+    protected final List<MessageItem> mValues;
+    protected final OnListFragmentInteractionListener mListener;
     private static final Pattern USERNAME_CHARACTERS = Pattern.compile("[A-Za-z0-9_]+(?:\\.[A-Za-z0-9_]+)*");
 
     public MyMessageRecyclerViewAdapter(List<MessageItem> items, OnListFragmentInteractionListener listener) {
@@ -47,14 +50,16 @@ public class MyMessageRecyclerViewAdapter extends RecyclerView.Adapter<MyMessage
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.fragment_message, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, final int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder rHolder, final int position) {
+
+        final ViewHolder holder = (ViewHolder) rHolder;
 
         holder.mItem = mValues.get(position);
         try {
@@ -105,6 +110,33 @@ public class MyMessageRecyclerViewAdapter extends RecyclerView.Adapter<MyMessage
         holder.mFooterView.append(" - ");
         holder.mFooterView.append(new Date((long) (mValues.get(position).timestamp * 1000)).toString());
 
+        holder.mOptionsView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //creating a popup menu
+                final Context context = v.getContext();
+                PopupMenu popup = new PopupMenu(context, holder.mOptionsView);
+                //inflating menu from xml resource
+                popup.inflate(R.menu.message_options);
+                //adding click listener
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.action_report:
+                                Intent intent = new Intent(context, ReportActivity.class);
+                                intent.putExtra("url", "message/" + holder.mItem.id);
+                                context.startActivity(intent);
+                                break;
+                        }
+                        return true;
+                    }
+                });
+                //displaying the popup
+                popup.show();
+            }
+        });
+
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -122,12 +154,18 @@ public class MyMessageRecyclerViewAdapter extends RecyclerView.Adapter<MyMessage
         return mValues.size();
     }
 
+    public void setMessages(ArrayList<MessageItem> items) {
+        Log.d("MyMessageRecyclerViewAd", "setting " + items.size() + " items");
+        mValues.addAll(items);
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
         public final TextView mUsernameView;
         public final TextView mContentView;
         public final ImageView mVisualView;
         public final TextView mFooterView;
+        public final TextView mOptionsView;
         public MessageItem mItem;
 
         public ViewHolder(View view) {
@@ -137,6 +175,7 @@ public class MyMessageRecyclerViewAdapter extends RecyclerView.Adapter<MyMessage
             mContentView = (TextView) view.findViewById(R.id.content);
             mVisualView = (ImageView) view.findViewById(R.id.message_visual);
             mFooterView = (TextView) view.findViewById(R.id.message_footer);
+            mOptionsView = (TextView) view.findViewById(R.id.message_options);
         }
 
         @Override

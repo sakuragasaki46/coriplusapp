@@ -37,4 +37,21 @@
     <string name="network_request_failed">Impossibile connettersi alla rete. Riprova più tardi.</string>
     <string name="action_refresh">Aggiorna</string>
     <string name="title_activity_profile">Informazioni sul profilo</string>
+    <string name="action_follow">Segui</string>
+    <string name="action_following">Segui già</string>
+    <string name="action_search">Cerca</string>
+    <string name="edit_profile">Modfica il profilo</string>
+    <string name="followers_text">seguaci</string>
+    <string name="following_text">seguiti</string>
+    <string name="messages_text">messaggi</string>
+    <string name="profile_missing">Questo profilo non esiste</string>
+    <string name="search_hint">Cerca profili</string>
+    <string name="action_no">No</string>
+    <string name="action_yes">Sì</string>
+    <string name="leaving_create">Sei sicuro che vuoi eliminare questo messaggio?</string>
+    <string name="upload_image_denied">Per caricare immagini, devi concedere il permesso per l\'archiviazione.</string>
+    <string name="action_report">Segnala</string>
+    <string name="field_biography">Biografia</string>
+    <string name="field_website">Sito web</string>
+    <string name="message_list_empty">Ancora nessun messaggio</string>
 </resources>

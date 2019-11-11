@@ -52,4 +52,12 @@
     <string name="edit_profile">Edit profile</string>
     <string name="action_follow">Follow</string>
     <string name="action_following">Following</string>
+    <string name="upload_image_denied">In order to upload images, you must grant storage permission.</string>
+    <string name="leaving_create">Are you sure you want to discard this?</string>
+    <string name="action_yes">Yes</string>
+    <string name="action_no">No</string>
+    <string name="action_report">Report</string>
+    <string name="field_biography">Bio</string>
+    <string name="field_website">Website</string>
+    <string name="message_list_empty">No messages yet</string>
 </resources>

@@ -37,7 +37,8 @@ public class ProfileMessagesFragment extends Fragment {
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
-    private MyProfileMessageRecyclerViewAdapter mAdapter;
+    private MyMessageRecyclerViewAdapter mAdapter;
+    private int debugCounter = 1;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -51,7 +52,7 @@ public class ProfileMessagesFragment extends Fragment {
     public static ProfileMessagesFragment newInstance(int columnCount) {
         ProfileMessagesFragment fragment = new ProfileMessagesFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
+        // args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
         Log.v("MessageFragment", "got here");
         return fragment;
@@ -69,10 +70,10 @@ public class ProfileMessagesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_profile_message_list, container, false);
+        final View view = inflater.inflate(R.layout.fragment_profile_message_list, container, false);
 
         RecyclerView rView = view.findViewById(R.id.list);
-        Log.d("onCreateView", "view " + (view instanceof RecyclerView? "is": "is not") + " instance of RecyclerView");
+        Log.d("onCreateView", "(" + (debugCounter++) + ") rView " + (rView != null? "is not": "is") + " null");
 
         // Set the adapter
         if (rView != null) {
@@ -81,7 +82,7 @@ public class ProfileMessagesFragment extends Fragment {
             LinearLayoutManager llm = new LinearLayoutManager(context);
             recyclerView.setLayoutManager(llm);
 
-            mAdapter = new MyProfileMessageRecyclerViewAdapter(new ArrayList<MessageItem>(), mListener);
+            mAdapter = new MyMessageRecyclerViewAdapter(new ArrayList<MessageItem>(), mListener);
             recyclerView.setAdapter(mAdapter);
 
             String userId;
@@ -92,46 +93,8 @@ public class ProfileMessagesFragment extends Fragment {
             }
 
             NetworkSingleton network = NetworkSingleton.getInstance();
+
             JsonObjectRequest request = new JsonObjectRequest(
-                    Request.Method.GET,
-                    network.createApiUrl("profile_info/" + userId),
-                    null,
-                    new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            JSONObject userInfo;
-                            try{
-                                userInfo = response.getJSONObject("user");
-                            } catch(JSONException ex){
-                                Toast.makeText(getActivity(), R.string.profile_missing, Toast.LENGTH_LONG).show();
-                                getActivity().finish();
-                                return;
-                            }
-                            try{
-                                String username = userInfo.getString("username");
-                                // getActivity().username = username;
-                                ((ProfileActivity) getActivity()).getSupportActionBar().setTitle(username);
-
-                                mAdapter.setProfileInfo((ProfileActivity) getActivity(), userInfo);
-                            }catch (JSONException ex){
-                                Toast.makeText(getActivity(), R.string.network_request_failed, Toast.LENGTH_LONG).show();
-                            }catch(NullPointerException ex){
-                                Log.e("ProfileActivity", "NullPointerException caught");
-                            }
-                        }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Toast.makeText(getActivity(), R.string.network_request_failed, Toast.LENGTH_LONG).show();
-                        }
-                    }
-            );
-            network.setContext(getActivity());
-            network.createQueue();
-            network.addToQueue(request);
-
-            request = new JsonObjectRequest(
                     Request.Method.GET,
                     network.createApiUrl( "profile_info/feed/" + userId),
                     null,
@@ -145,6 +108,11 @@ public class ProfileMessagesFragment extends Fragment {
                             } catch (JSONException ex){
                                 Log.e("MessageFragment", "Response does not have a timeline_media array.");
                                 Toast.makeText(getActivity(), R.string.feed_error, Toast.LENGTH_LONG).show();
+                                return;
+                            }
+                            if (jsonItems.length() == 0){
+                                recyclerView.setVisibility(View.GONE);
+                                view.findViewById(R.id.empty).setVisibility(View.VISIBLE);
                                 return;
                             }
                             for (int i = 0; i < jsonItems.length(); i++){
@@ -163,7 +131,9 @@ public class ProfileMessagesFragment extends Fragment {
                                     continue;
                                 }
                             }
-                            mAdapter.setMessages(items);
+                            mAdapter = new MyMessageRecyclerViewAdapter(items, mListener);
+                            recyclerView.setAdapter(mAdapter);
+                            // mAdapter.setMessages(items);
                             //context.loadingProgressBar.setVisibility(View.GONE);
                         }
 

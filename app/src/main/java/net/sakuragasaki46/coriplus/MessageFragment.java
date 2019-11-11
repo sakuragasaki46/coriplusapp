@@ -73,13 +73,15 @@ public class MessageFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_message_list, container, false);
+        final View view = inflater.inflate(R.layout.fragment_message_list, container, false);
+
+        RecyclerView rView = view.findViewById(R.id.list);
         Log.d("onCreateView", "view " + (view instanceof RecyclerView? "is": "is not") + " instance of RecyclerView");
 
         // Set the adapter
-        if (view instanceof RecyclerView) {
+        if (rView != null) {
             final Context context = view.getContext();
-            final RecyclerView recyclerView = (RecyclerView) view;
+            final RecyclerView recyclerView = (RecyclerView) rView;
             LinearLayoutManager llm = new LinearLayoutManager(context);
             recyclerView.setLayoutManager(llm);
             recyclerView.setAdapter(new MyMessageRecyclerViewAdapter(new ArrayList<MessageItem>(), mListener));
@@ -100,6 +102,12 @@ public class MessageFragment extends Fragment {
                             } catch (JSONException ex){
                                 Log.e("MessageFragment", "Response does not have a timeline_media array.");
                                 Toast.makeText(getActivity(), R.string.feed_error, Toast.LENGTH_LONG).show();
+                                return;
+                            }
+
+                            if (jsonItems.length() == 0){
+                                recyclerView.setVisibility(View.GONE);
+                                view.findViewById(R.id.empty).setVisibility(View.VISIBLE);
                                 return;
                             }
                             for (int i = 0; i < jsonItems.length(); i++){

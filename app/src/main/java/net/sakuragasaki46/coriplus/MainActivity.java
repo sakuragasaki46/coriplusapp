@@ -25,6 +25,7 @@ import net.sakuragasaki46.coriplus.ui.login.LoginActivity;
 import static androidx.preference.PreferenceManager.getDefaultSharedPreferences;
 
 public class MainActivity extends AppCompatActivity implements OnListFragmentInteractionListener{
+    private static final int REQUEST_CREATE = 10001;
     @Nullable
     private String host = null;
     @Nullable
@@ -58,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements OnListFragmentInt
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, CreateActivity.class));
+                startActivityForResult(new Intent(MainActivity.this, CreateActivity.class), REQUEST_CREATE);
             }
         });
 
@@ -147,5 +148,18 @@ public class MainActivity extends AppCompatActivity implements OnListFragmentInt
     @Override
     public void onListFragmentInteraction(MessageItem item) {
         // TODO
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CREATE && resultCode == RESULT_OK) {
+            MessageFragment fragment = new MessageFragment();
+
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.messages, fragment)
+                    .commit();
+        }
     }
 }
