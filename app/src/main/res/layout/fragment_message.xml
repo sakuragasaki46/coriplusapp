@@ -39,7 +39,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/text_margin"
         android:textColorLink="@color/colorAccent"
-        android:textAppearance="?attr/textAppearanceListItem" />
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:autoLink="web" />
 
     <ImageView
         android:layout_width="match_parent"

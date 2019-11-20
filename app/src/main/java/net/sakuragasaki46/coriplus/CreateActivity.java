@@ -79,8 +79,13 @@ public class CreateActivity extends AppCompatActivity {
         messageText = findViewById(R.id.message_text);
 
         try {
-            messageText.setText(getIntent().getExtras().getString("preload"));
-        } catch(NullPointerException ex){
+            try {
+                messageText.setText(getIntent().getExtras().getString(Intent.EXTRA_TEXT));
+            } catch (NullPointerException ex){
+                // TODO remove this!!
+                messageText.setText(getIntent().getExtras().getString("preload"));
+            }
+        } catch (NullPointerException ex) {
             messageText.setText("");
         }
 
@@ -226,7 +231,7 @@ public class CreateActivity extends AppCompatActivity {
             case MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE:
                 if(grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    Intent galleryIntent = new Intent(Intent.ACTION_PICK);
+                    Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
                     galleryIntent.setDataAndType(
                             MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
                     startActivityForResult(galleryIntent, RESULT_LOAD_IMAGE);

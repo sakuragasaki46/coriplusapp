@@ -4,9 +4,9 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,15 +19,11 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 
-import net.sakuragasaki46.coriplus.dummy.DummyContent;
-import net.sakuragasaki46.coriplus.dummy.DummyContent.DummyItem;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A fragment representing a list of Items.
@@ -35,7 +31,7 @@ import java.util.List;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class MessageFragment extends Fragment {
+public class FeedMessagesFragment extends Fragment {
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
@@ -47,17 +43,17 @@ public class MessageFragment extends Fragment {
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public MessageFragment() {
+    public FeedMessagesFragment() {
     }
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static MessageFragment newInstance(int columnCount) {
-        MessageFragment fragment = new MessageFragment();
+    public static FeedMessagesFragment newInstance(int columnCount) {
+        FeedMessagesFragment fragment = new FeedMessagesFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
-        Log.v("MessageFragment", "got here");
+        Log.v("FeedMessagesFragment", "got here");
         return fragment;
     }
 
@@ -75,6 +71,30 @@ public class MessageFragment extends Fragment {
                              Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_message_list, container, false);
 
+        final SwipeRefreshLayout swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(
+                new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        Log.i("ProfileMessagesFragment", "onRefresh called from SwipeRefreshLayout");
+
+                        // This method performs the actual data-refresh operation.
+                        // The method calls setRefreshing(false) when it's finished.
+                        updateFeed(view);
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                }
+        );
+
+
+        swipeRefreshLayout.setRefreshing(true);
+        updateFeed(view);
+        swipeRefreshLayout.setRefreshing(false);
+
+        return view;
+    }
+
+    private void updateFeed(final View view) {
         RecyclerView rView = view.findViewById(R.id.list);
         Log.d("onCreateView", "view " + (view instanceof RecyclerView? "is": "is not") + " instance of RecyclerView");
 
@@ -90,27 +110,27 @@ public class MessageFragment extends Fragment {
             NetworkSingleton network = NetworkSingleton.getInstance();
             JsonObjectRequest request = new JsonObjectRequest(
                     Request.Method.GET,
-                    network.createApiUrl( "feed"),
+                    network.createApiUrl("feed"),
                     null,
-                    new Response.Listener<JSONObject>(){
+                    new Response.Listener<JSONObject>() {
                         @Override
-                        public void onResponse(JSONObject obj){
+                        public void onResponse(JSONObject obj) {
                             ArrayList<MessageItem> items = new ArrayList<>();
                             JSONArray jsonItems;
-                            try{
+                            try {
                                 jsonItems = obj.getJSONArray("timeline_media");
-                            } catch (JSONException ex){
-                                Log.e("MessageFragment", "Response does not have a timeline_media array.");
+                            } catch (JSONException ex) {
+                                Log.e("FeedMessagesFragment", "Response does not have a timeline_media array.");
                                 Toast.makeText(getActivity(), R.string.feed_error, Toast.LENGTH_LONG).show();
                                 return;
                             }
 
-                            if (jsonItems.length() == 0){
+                            if (jsonItems.length() == 0) {
                                 recyclerView.setVisibility(View.GONE);
                                 view.findViewById(R.id.empty).setVisibility(View.VISIBLE);
                                 return;
                             }
-                            for (int i = 0; i < jsonItems.length(); i++){
+                            for (int i = 0; i < jsonItems.length(); i++) {
                                 try {
                                     JSONObject jsonItem = jsonItems.getJSONObject(i);
                                     items.add(new MessageItem(
@@ -121,8 +141,8 @@ public class MessageFragment extends Fragment {
                                             jsonItem.getInt("privacy"),
                                             jsonItem.optString("media")
                                     ));
-                                } catch(JSONException ex){
-                                    Log.w("MessageFragment", "missing some data on message");
+                                } catch (JSONException ex) {
+                                    Log.w("FeedMessagesFragment", "missing some data on message");
                                     continue;
                                 }
                             }
@@ -131,19 +151,18 @@ public class MessageFragment extends Fragment {
                         }
 
                     },
-                    new Response.ErrorListener(){
+                    new Response.ErrorListener() {
                         @Override
-                        public void onErrorResponse(VolleyError error){
-                            Log.e("MessageFragment", "Couldn't refresh feed");
+                        public void onErrorResponse(VolleyError error) {
+                            Log.e("FeedMessagesFragment", "Couldn't refresh feed");
                             Toast.makeText(getActivity(), R.string.feed_error, Toast.LENGTH_LONG).show();
                         }
                     }
-                    );
+            );
             network.setContext(getActivity());
             network.createQueue();
             network.addToQueue(request);
         }
-        return view;
     }
 
 

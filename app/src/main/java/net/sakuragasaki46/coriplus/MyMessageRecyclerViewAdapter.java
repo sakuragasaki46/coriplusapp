@@ -21,11 +21,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import net.sakuragasaki46.coriplus.OnListFragmentInteractionListener;
 import net.sakuragasaki46.coriplus.dummy.DummyContent.DummyItem;
 
 import org.json.JSONException;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +62,7 @@ public class MyMessageRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         final ViewHolder holder = (ViewHolder) rHolder;
 
         holder.mItem = mValues.get(position);
+
         try {
             String username = mValues.get(position).userInfo.getString("username");
             holder.mUsernameView.setText(username);
@@ -101,8 +102,32 @@ public class MyMessageRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         holder.mContentView.setMovementMethod(LinkMovementMethod.getInstance());
 
         if (holder.mItem.imageUrl != null) {
-            new DownloadImageTask(holder.mVisualView).execute(holder.mItem.imageUrl);
+            NetworkImageFetcher.getInstance().startDownloadImage(holder.mVisualView, holder.mItem.imageUrl);
+            // new DownloadImageTask(holder.mVisualView).execute(holder.mItem.imageUrl);
             holder.mVisualView.setVisibility(View.VISIBLE);
+            holder.mVisualView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    PopupMenu popup = new PopupMenu(v.getContext(), holder.mVisualView);
+                    popup.inflate(R.menu.image_options);
+
+                    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            switch (item.getItemId()) {
+                                case R.id.action_download: {
+                                    NetworkImageFetcher.getInstance().startSaveImage(holder.mItem.imageUrl);
+                                    break;
+                                }
+                            }
+                            return true;
+                        }
+                    });
+
+                    popup.show();
+                    return false;
+                }
+            });
         }
         // TODO
         holder.mFooterView.setText(holder.itemView.getContext().getResources()
@@ -117,17 +142,32 @@ public class MyMessageRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                 final Context context = v.getContext();
                 PopupMenu popup = new PopupMenu(context, holder.mOptionsView);
                 //inflating menu from xml resource
-                popup.inflate(R.menu.message_options);
+                try {
+                    if (NetworkSingleton.getInstance().getUserId().equals(holder.mItem.userInfo.getString("id"))) {
+                        popup.inflate(R.menu.message_options_self);
+                    } else {
+                        popup.inflate(R.menu.message_options_other);
+                    }
+                } catch (JSONException ex){
+                    Log.e("MyMessageRecyclerViewAd", "no userid");
+                }
                 //adding click listener
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
-                            case R.id.action_report:
+                            case R.id.action_edit: {
+                                Intent intent = new Intent(context, EditActivity.class);
+                                intent.putExtra("id", holder.mItem.id);
+                                context.startActivity(intent);
+                                break;
+                            }
+                            case R.id.action_report: {
                                 Intent intent = new Intent(context, ReportActivity.class);
                                 intent.putExtra("url", "message/" + holder.mItem.id);
                                 context.startActivity(intent);
                                 break;
+                            }
                         }
                         return true;
                     }
@@ -157,6 +197,7 @@ public class MyMessageRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
     public void setMessages(ArrayList<MessageItem> items) {
         Log.d("MyMessageRecyclerViewAd", "setting " + items.size() + " items");
         mValues.addAll(items);
+        notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -199,32 +240,6 @@ public class MyMessageRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
             Intent intent = new Intent(context, ProfileActivity.class);
             intent.putExtra("userid", span);
             context.startActivity(intent);
-        }
-    }
-
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-        // TODO cache this
-        ImageView bmImage;
-
-        public DownloadImageTask(ImageView bmImage) {
-            this.bmImage = bmImage;
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-            String urlDisplay = urls[0];
-            Bitmap mIcon11 = null;
-            try {
-                InputStream in = new java.net.URL(urlDisplay).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("DownloadImageTask", e.getMessage());
-                e.printStackTrace();
-            }
-            return mIcon11;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            bmImage.setImageBitmap(result);
         }
     }
 }

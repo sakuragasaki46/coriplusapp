@@ -40,6 +40,7 @@ public class ReportActivity extends AppCompatActivity {
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
+            actionBar.setTitle(R.string.action_report);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }

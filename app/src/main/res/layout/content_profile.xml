@@ -1,38 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+
+    <!--androidx.core.widget.NestedScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+
+        android:orientation="vertical"
+        android:id="@+id/profile_layout"-->
+
+
+
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ProfileActivity"
     tools:showIn="@layout/activity_profile"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <com.google.android.material.appbar.CollapsingToolbarLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-        android:id="@+id/header_layout">
 
-            <include layout="@layout/fragment_profile_header" />
-        </com.google.android.material.appbar.CollapsingToolbarLayout>
-
-
-
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/viewpager"
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        app:layout_constraintTop_toBottomOf="@+id/header_layout">
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tabs"
+        app:elevation="0dp"
+        android:background="@android:color/transparent">
+        <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tabGravity="fill"
-            app:tabMode="fixed" />
-    </androidx.viewpager.widget.ViewPager>
+            app:layout_scrollFlags="scroll">
+            <androidx.appcompat.widget.Toolbar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:contentInsetStart="0dp"
+                android:contentInsetLeft="0dp"
+                android:contentInsetRight="0dp"
+                android:contentInsetEnd="0dp"
+                app:contentInsetLeft="0dp"
+                app:contentInsetStart="0dp"
+                app:contentInsetRight="0dp"
+                app:contentInsetEnd="0dp"
+                >
+                <include layout="@layout/fragment_profile_header" />
+            </androidx.appcompat.widget.Toolbar>
 
-</LinearLayout>
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+
+
+    <include layout="@layout/fragment_profile_content" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
+    <!--/androidx.core.widget.NestedScrollView-->
+

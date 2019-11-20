@@ -49,22 +49,34 @@ public class ProfileAboutFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        try{
+            refreshFragment();
+        } catch(NullPointerException ex){
+            Log.e("ProfileAboutFragment", "NullPointerException caught");
+            ex.printStackTrace();
+        }
+    }
+
     public void refreshFragment(){
         JSONObject userInfo = ((ProfileActivity) getActivity()).getUserInfo();
 
-        if (userInfo != null){
-            TableRow bioRow = getActivity().findViewById(R.id.row_biography);
+        if (userInfo != null && getView() != null){
+            TableRow bioRow = getView().findViewById(R.id.row_biography);
             String bio = userInfo.optString("biography");
-            if (bio != null){
+            if (bio != null && !bio.isEmpty()){
                 bioRow.setVisibility(View.VISIBLE);
                 ((TextView) bioRow.findViewById(R.id.field_biography)).setText(bio);
             }
 
-            TableRow websiteRow = getActivity().findViewById(R.id.row_website);
+            TableRow websiteRow = getView().findViewById(R.id.row_website);
             String website = userInfo.optString("website");
-            if (website != null){
+            if (website != null && !website.isEmpty()){
                 websiteRow.setVisibility(View.VISIBLE);
-                ((TextView) websiteRow.findViewById(R.id.field_website)).setText(bio);
+                ((TextView) websiteRow.findViewById(R.id.field_website)).setText(website);
             }
         } else {
             Log.w("ProfileAboutFragment", "userInfo is null");

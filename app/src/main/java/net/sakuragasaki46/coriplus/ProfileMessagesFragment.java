@@ -1,5 +1,6 @@
 package net.sakuragasaki46.coriplus;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -32,10 +34,8 @@ import java.util.ArrayList;
  */
 public class ProfileMessagesFragment extends Fragment {
 
-    // TODO: Customize parameter argument names
-    private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
-    private int mColumnCount = 1;
+    private RecyclerView recyclerView;
+
     private OnListFragmentInteractionListener mListener;
     private MyMessageRecyclerViewAdapter mAdapter;
     private int debugCounter = 1;
@@ -49,12 +49,12 @@ public class ProfileMessagesFragment extends Fragment {
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static ProfileMessagesFragment newInstance(int columnCount) {
+    public static ProfileMessagesFragment newInstance() {
         ProfileMessagesFragment fragment = new ProfileMessagesFragment();
         Bundle args = new Bundle();
         // args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
-        Log.v("MessageFragment", "got here");
+        Log.v("FeedMessagesFragment", "got here");
         return fragment;
     }
 
@@ -72,83 +72,106 @@ public class ProfileMessagesFragment extends Fragment {
                              Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_profile_message_list, container, false);
 
-        RecyclerView rView = view.findViewById(R.id.list);
-        Log.d("onCreateView", "(" + (debugCounter++) + ") rView " + (rView != null? "is not": "is") + " null");
+        // TODO
 
-        // Set the adapter
-        if (rView != null) {
-            final Context context = view.getContext();
-            final RecyclerView recyclerView = (RecyclerView) rView;
-            LinearLayoutManager llm = new LinearLayoutManager(context);
-            recyclerView.setLayoutManager(llm);
+        Log.d("ProfileMessagesFragment", "getActivity() is " + getActivity());
 
-            mAdapter = new MyMessageRecyclerViewAdapter(new ArrayList<MessageItem>(), mListener);
-            recyclerView.setAdapter(mAdapter);
+        updateProfile(view);
 
-            String userId;
-            try {
-                userId = getArguments().getString("userid");
-            } catch (NullPointerException e) {
-                userId = "self";
-            }
-
-            NetworkSingleton network = NetworkSingleton.getInstance();
-
-            JsonObjectRequest request = new JsonObjectRequest(
-                    Request.Method.GET,
-                    network.createApiUrl( "profile_info/feed/" + userId),
-                    null,
-                    new Response.Listener<JSONObject>(){
-                        @Override
-                        public void onResponse(JSONObject obj){
-                            ArrayList<MessageItem> items = new ArrayList<>();
-                            JSONArray jsonItems;
-                            try{
-                                jsonItems = obj.getJSONArray("timeline_media");
-                            } catch (JSONException ex){
-                                Log.e("MessageFragment", "Response does not have a timeline_media array.");
-                                Toast.makeText(getActivity(), R.string.feed_error, Toast.LENGTH_LONG).show();
-                                return;
-                            }
-                            if (jsonItems.length() == 0){
-                                recyclerView.setVisibility(View.GONE);
-                                view.findViewById(R.id.empty).setVisibility(View.VISIBLE);
-                                return;
-                            }
-                            for (int i = 0; i < jsonItems.length(); i++){
-                                try {
-                                    JSONObject jsonItem = jsonItems.getJSONObject(i);
-                                    items.add(new MessageItem(
-                                            jsonItem.getInt("id"),
-                                            jsonItem.getJSONObject("user"),
-                                            jsonItem.getString("text"),
-                                            jsonItem.getDouble("pub_date"),
-                                            jsonItem.getInt("privacy"),
-                                            jsonItem.optString("media")
-                                    ));
-                                } catch(JSONException ex){
-                                    Log.w("MessageFragment", "missing some data on message");
-                                    continue;
-                                }
-                            }
-                            mAdapter = new MyMessageRecyclerViewAdapter(items, mListener);
-                            recyclerView.setAdapter(mAdapter);
-                            // mAdapter.setMessages(items);
-                            //context.loadingProgressBar.setVisibility(View.GONE);
-                        }
-
-                    },
-                    new Response.ErrorListener(){
-                        @Override
-                        public void onErrorResponse(VolleyError error){
-                            Log.e("MessageFragment", "Couldn't refresh feed");
-                            Toast.makeText(getActivity(), R.string.feed_error, Toast.LENGTH_LONG).show();
-                        }
-                    }
-            );
-            network.addToQueue(request);
-        }
         return view;
+    }
+
+    private void updateProfile(final View view) {
+        if (recyclerView == null) {
+            RecyclerView rView = view.findViewById(R.id.list);
+            Log.d("onCreateView", "(" + (debugCounter++) + ") rView " + (rView != null ? "is not" : "is") + " null");
+
+            // Set the adapter
+            if (rView != null) {
+                final Context context = view.getContext();
+                recyclerView = (RecyclerView) rView;
+                LinearLayoutManager llm = new LinearLayoutManager(context);
+                recyclerView.setLayoutManager(llm);
+
+
+            }
+        }
+
+        mAdapter = new MyMessageRecyclerViewAdapter(new ArrayList<MessageItem>(), mListener);
+        recyclerView.setAdapter(mAdapter);
+
+        String userId;
+        try {
+            userId = getArguments().getString("userid");
+        } catch (NullPointerException e) {
+            userId = "self";
+        }
+
+        NetworkSingleton network = NetworkSingleton.getInstance();
+
+        JsonObjectRequest request = new JsonObjectRequest(
+                Request.Method.GET,
+                network.createApiUrl( "profile_info/feed/" + userId),
+                null,
+                new Response.Listener<JSONObject>(){
+                    @Override
+                    public void onResponse(JSONObject obj){
+                        ArrayList<MessageItem> items = new ArrayList<>();
+                        JSONArray jsonItems;
+                        try{
+                            jsonItems = obj.getJSONArray("timeline_media");
+                        } catch (JSONException ex){
+                            Log.e("FeedMessagesFragment", "Response does not have a timeline_media array.");
+                            Toast.makeText(getActivity(), R.string.feed_error, Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                        if (jsonItems.length() == 0){
+                            recyclerView.setVisibility(View.GONE);
+                            view.findViewById(R.id.empty).setVisibility(View.VISIBLE);
+                            return;
+                        }
+                        for (int i = 0; i < jsonItems.length(); i++){
+                            try {
+                                JSONObject jsonItem = jsonItems.getJSONObject(i);
+                                items.add(new MessageItem(
+                                        jsonItem.getInt("id"),
+                                        jsonItem.getJSONObject("user"),
+                                        jsonItem.getString("text"),
+                                        jsonItem.getDouble("pub_date"),
+                                        jsonItem.getInt("privacy"),
+                                        jsonItem.optString("media")
+                                ));
+                            } catch(JSONException ex){
+                                Log.w("FeedMessagesFragment", "missing some data on message");
+                                continue;
+                            }
+                        }
+                        mAdapter.setMessages(items);
+                        Log.d("ProfileMessagesFragment","recyclerView.getHeight() is " + recyclerView.getHeight());
+                        /*
+                        try {
+                            recyclerView.setMinimumHeight(
+                                    ((Activity) recyclerView.getContext()).findViewById(R.id.viewpager).getHeight() -
+                                            ((Activity) recyclerView.getContext()).findViewById(R.id.tabs).getHeight());
+                        } catch(NullPointerException ex){
+                            Log.w("ProfileMessagesFragment", "life is sad :'(");
+                        }
+
+                         */
+                        // mAdapter.setMessages(items);
+                        //context.loadingProgressBar.setVisibility(View.GONE);
+                    }
+
+                },
+                new Response.ErrorListener(){
+                    @Override
+                    public void onErrorResponse(VolleyError error){
+                        Log.e("FeedMessagesFragment", "Couldn't refresh feed");
+                        Toast.makeText(getActivity(), R.string.feed_error, Toast.LENGTH_LONG).show();
+                    }
+                }
+        );
+        network.addToQueue(request);
     }
 
 

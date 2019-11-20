@@ -54,4 +54,12 @@
     <string name="field_biography">Biografia</string>
     <string name="field_website">Sito web</string>
     <string name="message_list_empty">Ancora nessun messaggio</string>
+    <string name="action_download">Scarica</string>
+    <string name="action_edit">Modifica</string>
+    <string name="action_save">Salva</string>
+    <string name="image_save_success">Immagine salvata con successo.</string>
+    <string name="profile_full_name">Nome completo</string>
+    <string name="invalid_username2">Il nome utente può contenere solo lettere ASCII, cifre, trattini bassi e punti.</string>
+    <string name="username_unavailable">Questo nome utente non è disponibile.</string>
+    <string name="hyphen">-</string>
 </resources>

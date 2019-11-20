@@ -5,6 +5,8 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager.widget.PagerAdapter;
 
 import org.json.JSONObject;
 
@@ -22,7 +24,7 @@ public class ProfileViewPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         Fragment fragment;
         if (position == 0){
-            fragment = ProfileMessagesFragment.newInstance(1);
+            fragment = ProfileMessagesFragment.newInstance();
         } else {
             fragment = ProfileAboutFragment.newInstance();
         }

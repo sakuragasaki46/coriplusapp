@@ -4,11 +4,9 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.opengl.Visibility;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,7 +28,7 @@ public class MainActivity extends AppCompatActivity implements OnListFragmentInt
     private String host = null;
     @Nullable
     private String accessToken = null;
-    private MessageFragment messageFragment;
+    private FeedMessagesFragment messageFragment;
     private View loadingProgressBar;
 
     @Override
@@ -71,13 +69,15 @@ public class MainActivity extends AppCompatActivity implements OnListFragmentInt
 
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.messages, new MessageFragment())
+                    .replace(R.id.messages, new FeedMessagesFragment())
                     .commit();
 
             if (loadingProgressBar != null) {
                 loadingProgressBar.setVisibility(View.GONE);
             }
         }
+
+        NetworkImageFetcher.getInstance().setContext(this);
     }
 
     @Override
@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements OnListFragmentInt
         }
 
         if (id == R.id.action_refresh){
-            MessageFragment fragment = new MessageFragment();
+            FeedMessagesFragment fragment = new FeedMessagesFragment();
 
             getSupportFragmentManager()
                     .beginTransaction()
@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements OnListFragmentInt
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CREATE && resultCode == RESULT_OK) {
-            MessageFragment fragment = new MessageFragment();
+            FeedMessagesFragment fragment = new FeedMessagesFragment();
 
             getSupportFragmentManager()
                     .beginTransaction()
@@ -162,4 +162,13 @@ public class MainActivity extends AppCompatActivity implements OnListFragmentInt
                     .commit();
         }
     }
+
+    /*@Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
+        if (requestCode == NetworkImageFetcher.REQUEST_DOWNLOAD_IMAGE){
+            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                NetworkImageFetcher.getInstance().startSaveImage();
+            }
+        }
+    }*/
 }
