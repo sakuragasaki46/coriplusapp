@@ -1,36 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/profile_about"
+    android:padding="16dp"
     android:name="net.sakuragasaki46.coriplus.ProfileAboutFragment">
 
-    <TableRow
+    <LinearLayout
         android:id="@+id/row_biography"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
 
         <TextView
             android:text="@string/field_biography"
-            android:layout_gravity="end"
             android:textStyle="bold"
-            android:textColor="@color/colorAccent"/>
+            android:textColor="@color/colorAccent"
+            android:layout_width="0dp"
+            android:layout_weight=".20"
+            android:layout_height="match_parent" />
 
         <TextView
-            android:id="@+id/field_biography" />
+            android:id="@+id/field_biography"
+            android:layout_width="0dp"
+            android:layout_weight=".80"
+            android:layout_height="match_parent"/>
 
-    </TableRow>
+    </LinearLayout>
 
-    <TableRow
+    <LinearLayout
         android:id="@+id/row_website"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
         <TextView
             android:text="@string/field_website"
             android:layout_gravity="end"
             android:textStyle="bold"
-            android:textColor="@color/colorAccent" />
+            android:textColor="@color/colorAccent"
+            android:layout_width="0dp"
+            android:layout_weight=".20"
+            android:layout_height="match_parent"/>
 
         <TextView
-            android:id="@+id/field_website" />
-    </TableRow>
+            android:id="@+id/field_website"
+            android:autoLink="web"
+            android:layout_width="0dp"
+            android:layout_weight=".80"
+            android:layout_height="match_parent"/>
+    </LinearLayout>
 
-</TableLayout>
+</LinearLayout>

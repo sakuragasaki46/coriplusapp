@@ -88,17 +88,18 @@ public class ProfileMessagesFragment extends Fragment {
 
             // Set the adapter
             if (rView != null) {
-                final Context context = view.getContext();
                 recyclerView = (RecyclerView) rView;
+
+                final Context context = view.getContext();
                 LinearLayoutManager llm = new LinearLayoutManager(context);
                 recyclerView.setLayoutManager(llm);
+                Log.v("ProfileMessagesFragment", "after setLayoutManager");
 
-
+                mAdapter = new MyMessageRecyclerViewAdapter(new ArrayList<MessageItem>(), mListener);
+                recyclerView.setAdapter(mAdapter);
+                Log.v("ProfileMessagesFragment", "after setAdapter");
             }
         }
-
-        mAdapter = new MyMessageRecyclerViewAdapter(new ArrayList<MessageItem>(), mListener);
-        recyclerView.setAdapter(mAdapter);
 
         String userId;
         try {

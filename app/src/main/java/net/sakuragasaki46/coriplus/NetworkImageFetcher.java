@@ -3,9 +3,11 @@ package net.sakuragasaki46.coriplus;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
@@ -14,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 
@@ -55,6 +59,10 @@ public class NetworkImageFetcher {
         Log.d("SaveImageTask", "save path created " + getSavePath().mkdirs());
         Log.d("SaveImageTask", "save path " + (getSavePath().exists()? "exists": "not exists"));
         new SaveImageTask().execute(imageUrl);
+    }
+
+    public void startShareImage(String imageUrl) {
+        new ShareImageTask().execute(imageUrl);
     }
 
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
@@ -145,6 +153,48 @@ public class NetworkImageFetcher {
         @Override
         protected void onPostExecute(Void aVoid){
             Toast.makeText(context, R.string.image_save_success, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private class ShareImageTask extends AsyncTask<String, Void, Uri> {
+        public ShareImageTask() {
+        }
+
+        protected Uri doInBackground(String... urls) {
+            String urlDisplay = urls[0];
+            Bitmap mIcon11 = null;
+            // first look for the cached file
+            File cachedFile = new File(cacheDir, getHexMd5(urlDisplay) + ".clean");
+            Log.d("DownloadImageTask", "cacheDir is " + cacheDir);
+            try {
+                InputStream in;
+                if(!cachedFile.exists()) {
+                    Log.d("DownloadImageTask", "cache miss");
+                    in = new java.net.URL(urlDisplay).openStream();
+                    OutputStream out = new FileOutputStream(cachedFile);
+                    byte[] buffer = new byte[2048];
+                    int length;
+
+                    while ((length = in.read(buffer)) != -1) {
+                        out.write(buffer, 0, length);
+                    }
+                    in.close();
+                    out.close();
+                }
+                return FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".fileprovider", cachedFile);
+            } catch (Exception e) {
+                Log.e("DownloadImageTask", e.getMessage());
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        protected void onPostExecute(Uri result) {
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("image/png");
+            intent.putExtra(Intent.EXTRA_STREAM, result);
+            context.startActivity(Intent.createChooser(intent, "Share"));
         }
     }
 

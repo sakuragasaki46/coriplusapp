@@ -1,14 +1,7 @@
 package net.sakuragasaki46.coriplus;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
@@ -21,23 +14,18 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import net.sakuragasaki46.coriplus.dummy.DummyContent.DummyItem;
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.json.JSONException;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
- * specified {@link OnListFragmentInteractionListener}.
- * TODO: Replace the implementation with code for your data type.
- */
 public class MyMessageRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     protected final List<MessageItem> mValues;
@@ -67,7 +55,7 @@ public class MyMessageRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
             String username = mValues.get(position).userInfo.getString("username");
             holder.mUsernameView.setText(username);
         } catch(JSONException ex){
-            holder.mUsernameView.setText(" -- unknown -- ");
+            holder.mUsernameView.setText(R.string.unknown_user);
         }
         holder.mUsernameView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,6 +105,10 @@ public class MyMessageRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                             switch (item.getItemId()) {
                                 case R.id.action_download: {
                                     NetworkImageFetcher.getInstance().startSaveImage(holder.mItem.imageUrl);
+                                    break;
+                                }
+                                case R.id.action_share: {
+                                    NetworkImageFetcher.getInstance().startShareImage(holder.mItem.imageUrl);
                                     break;
                                 }
                             }

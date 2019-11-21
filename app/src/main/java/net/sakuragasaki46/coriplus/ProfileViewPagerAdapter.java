@@ -10,7 +10,7 @@ import androidx.viewpager.widget.PagerAdapter;
 
 import org.json.JSONObject;
 
-public class ProfileViewPagerAdapter extends FragmentPagerAdapter {
+public class ProfileViewPagerAdapter extends FragmentStatePagerAdapter {
     private String title[] = {"Messages", "About"};
     private String userid;
     private JSONObject userInfo;
@@ -44,6 +44,11 @@ public class ProfileViewPagerAdapter extends FragmentPagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         return title[position];
+    }
+
+    @Override
+    public int getItemPosition(Object object) {
+        return POSITION_NONE;
     }
 
     public void setUserInfo(JSONObject userInfo) {

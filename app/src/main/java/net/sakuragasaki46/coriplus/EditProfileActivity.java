@@ -9,6 +9,7 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -158,6 +159,39 @@ public class EditProfileActivity extends AppCompatActivity {
     }
 
     private void saveProfile() {
-        // TODO
+        NetworkSingleton network = NetworkSingleton.getInstance();
+
+        JSONObject jsonData = new JSONObject();
+        try {
+            jsonData.put("username", userNameView.getText().toString());
+            jsonData.put("full_name", fullNameView.getText().toString());
+            jsonData.put("biography", biographyView.getText().toString());
+        } catch(JSONException ex){
+            Log.e("EditProfileActivity", "could not build jsonData");
+            return;
+        }
+
+        JsonObjectRequest request = new JsonObjectRequest(
+                Request.Method.POST,
+                network.createApiUrl("edit_profile"),
+                jsonData,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        if (response.optString("status", "fail").equals("ok")){
+                            finish();
+                        } else {
+                            Toast.makeText(EditProfileActivity.this, R.string.network_request_failed, Toast.LENGTH_LONG).show();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(EditProfileActivity.this, R.string.network_request_failed, Toast.LENGTH_LONG).show();
+                    }
+                }
+        );
+        network.addToQueue(request);
     }
 }

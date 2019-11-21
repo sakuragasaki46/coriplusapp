@@ -8,6 +8,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
@@ -83,7 +84,7 @@ public class ProfileActivity extends AppCompatActivity implements OnListFragment
             }
         });
 
-        /*final SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
+        final SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
 
         swipeRefreshLayout.setOnRefreshListener(
                 new SwipeRefreshLayout.OnRefreshListener() {
@@ -99,14 +100,24 @@ public class ProfileActivity extends AppCompatActivity implements OnListFragment
                     }
                 }
         );
-         */
-        viewPager = findViewById(R.id.viewpager);
 
-        ProfileViewPagerAdapter adapter = new ProfileViewPagerAdapter(getSupportFragmentManager(), String.valueOf(userId));
-        viewPager.setAdapter(adapter);
+        AppBarLayout appBarLayout = findViewById(R.id.header_app_bar);
+
+        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
+                swipeRefreshLayout.setEnabled(i == 0);
+            }
+        });
+
+        viewPager = findViewById(R.id.viewpager);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
+
+        adapter = new ProfileViewPagerAdapter(getSupportFragmentManager(), String.valueOf(userId));
+        viewPager.setAdapter(adapter);
 
         refreshProfile();
 
@@ -251,8 +262,9 @@ public class ProfileActivity extends AppCompatActivity implements OnListFragment
     }
 
     public void setProfileInfo(JSONObject userInfo) throws JSONException{
+        adapter.notifyDataSetChanged();
         View headerView = findViewById(R.id.profile_header);
-        View contentView = findViewById(R.id.viewpager);
+        ViewPager contentView = findViewById(R.id.viewpager);
         final TextView mFollowersCount = findViewById(R.id.followers_count);
         
         userId = String.valueOf(userInfo.getInt("id"));
@@ -371,7 +383,5 @@ public class ProfileActivity extends AppCompatActivity implements OnListFragment
                 button1.setText(R.string.action_follow);
             }
         }
-
-        // TODO add refresh tabs
     }
 }

@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
@@ -61,18 +62,24 @@ public class ProfileAboutFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+    }
+
     public void refreshFragment(){
         JSONObject userInfo = ((ProfileActivity) getActivity()).getUserInfo();
 
         if (userInfo != null && getView() != null){
-            TableRow bioRow = getView().findViewById(R.id.row_biography);
+            LinearLayout bioRow = getView().findViewById(R.id.row_biography);
             String bio = userInfo.optString("biography");
             if (bio != null && !bio.isEmpty()){
                 bioRow.setVisibility(View.VISIBLE);
                 ((TextView) bioRow.findViewById(R.id.field_biography)).setText(bio);
             }
 
-            TableRow websiteRow = getView().findViewById(R.id.row_website);
+            LinearLayout websiteRow = getView().findViewById(R.id.row_website);
             String website = userInfo.optString("website");
             if (website != null && !website.isEmpty()){
                 websiteRow.setVisibility(View.VISIBLE);
